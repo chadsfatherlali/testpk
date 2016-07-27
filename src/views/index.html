@@ -66,22 +66,27 @@
         function renderMap (obj, type) {
             var defs = [];
 
-            $.each(obj, function (k, v) {
-                var namecache = v.latitude + '_' +  v.longitude + '_' + v.pokemon_data.pokemon_id;
-
-                if ($.jStorage.get(namecache)) {
-                    var result = JSON.parse($.jStorage.get(namecache));
+            if ($.jStorage.index().length > 0) {
+                $.each($.jStorage.index(), function (k, v) {
+                    var result = JSON.parse($.jStorage.get(v));
 
                     new google.maps.Marker({
-                        position: {lat: v.latitude, lng: v.longitude},
+                        position: {lat: result.latitude, lng: result.longitude},
                         map: map,
                         icon: result.sprites.front_default,
                         title: result.name
                     });
-                }
+                });
+            }
 
-                else {
+            $.each(obj, function (k, v) {
+                var namecache = v.latitude + '_' +  v.longitude + '_' + v.pokemon_data.pokemon_id;
+
+                if (!$.jStorage.get(namecache)) {
                     defs.push($.get(endpoint + v.pokemon_data.pokemon_id).then(function (result) {
+                        result.latitude = v.latitude;
+                        result.longitude = v.longitude;
+
                         $.jStorage.set(namecache, JSON.stringify(result));
                         $.jStorage.setTTL(namecache, v.time_till_hidden_ms);
 
