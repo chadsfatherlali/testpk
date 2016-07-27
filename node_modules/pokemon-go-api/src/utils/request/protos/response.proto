@@ -1,0 +1,32 @@
+message ResponseEnvelope {
+	required int32 status_code = 1;
+	required uint64 request_id = 2;
+	required string api_url = 3;
+
+	required Unknown6Response unknown6 = 6;
+	required AuthTicket auth_ticket = 7;
+
+	repeated bytes returns = 100;
+	required string error = 101;
+
+  message Unknown6Response {
+  	required int32 unknown1 = 1; //6
+  	required Unknown2 unknown2 = 2;
+
+  	message Unknown2 {
+  		required uint64 unknown1 = 1;
+  	}
+  }
+
+  message AuthTicket {
+  	required bytes start = 1;
+  	required uint64 expire_timestamp_ms = 2;
+  	required bytes end = 3;
+  }
+
+	message Unknown7 {
+		required bytes unknown71 = 1;
+		required int64 unknown72 = 2;
+		required bytes unknown73 = 3;
+	}
+}

@@ -1,0 +1,64 @@
+message ProfileResponse {
+  repeated int32 unknown1 = 1;
+  required Profile profile = 2;
+
+  message Profile {
+    required int64 creation_timestamp_ms  = 1;
+    required string username = 2;
+    required int32 team = 5;
+    repeated TutorialState tutorial_state = 7 [packed=true];
+    required PlayerAvatar avatar = 8;
+  	required int32 max_pokemon_storage = 9;
+  	required int32 max_item_storage = 10;
+  	required DailyBonus daily_bonus = 11;
+  	required EquippedBadge equipped_badge = 12;
+    required ContactSettings contact_settings = 13;
+	  repeated Currency currencies = 14;
+
+    enum TutorialState {
+    	LEGAL_SCREEN = 0;
+    	AVATAR_SELECTION = 1;
+    	ACCOUNT_CREATION = 2;
+    	POKEMON_CAPTURE = 3;
+    	NAME_SELECTION = 4;
+    	POKEMON_BERRY = 5;
+    	USE_ITEM = 6;
+    	FIRST_TIME_EXPERIENCE_COMPLETE = 7;
+    	POKESTOP_TUTORIAL = 8;
+    	GYM_TUTORIAL = 9;
+    }
+
+    message PlayerAvatar {
+    	optional int32 skin = 2;
+    	optional int32 hair = 3;
+    	optional int32 shirt = 4;
+    	optional int32 pants = 5;
+    	optional int32 hat = 6;
+    	optional int32 shoes = 7;
+    	optional int32 gender = 8;
+    	optional int32 eyes = 9;
+    	optional int32 backpack = 10;
+    }
+
+    message DailyBonus {
+    	optional int64 next_collected_timestamp_ms = 1;
+    	optional int64 next_defender_bonus_collect_timestamp_ms = 2;
+    }
+
+    message EquippedBadge {
+    	optional int32 badge_type = 1;
+    	optional int32 level = 2;
+    	optional int64 next_equip_change_allowed_timestamp_ms = 3;
+    }
+
+    message ContactSettings {
+    	optional bool send_marketing_emails = 1;
+    	optional bool send_push_notifications = 2;
+    }
+
+    message Currency {
+      optional string name = 1;
+      optional int32 amount = 2;
+    }
+  }
+}

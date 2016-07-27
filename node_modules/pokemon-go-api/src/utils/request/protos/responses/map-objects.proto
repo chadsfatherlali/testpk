@@ -1,0 +1,135 @@
+message GetMapObjectsResponse {
+	repeated MapCell map_cells = 1;
+	optional int32 status = 2;
+
+  message MapCell {
+  	// S2 geographic area that the cell covers (http://s2map.com/) (https://code.google.com/archive/p/s2-geometry-library/)
+  	optional uint64 s2_cell_id = 1;
+  	optional int64 current_timestamp_ms = 2;
+    repeated FortData forts = 3;
+    repeated SpawnPoint spawn_points = 4;
+    repeated string deleted_objects = 6;
+    optional bool is_truncated_list = 7;
+    repeated FortSummary fort_summaries = 8;
+    repeated SpawnPoint decimated_spawn_points = 9;
+
+    // Pokemon within 2 steps or less.
+	  repeated WildPokemon wild_pokemon = 5;
+
+    // Pokemon within 1 step or none.
+	  repeated MapPokemon catchable_pokemon = 10;
+
+    // Pokemon farther away than 2 steps, but still in the area.
+	  repeated NearbyPokemon nearby_pokemon = 11;
+
+    message FortData {
+    	optional string id = 1;
+    	optional int64 last_modified_timestamp_ms = 2;
+    	optional double latitude = 3;
+    	optional double longitude = 4;
+    	optional bool enabled = 8;
+    	optional int32 type = 9;
+
+      // team that owns the gym
+      optional int32 owned_by_team = 5;
+
+    	// highest cp pokemon at the gym
+    	optional int32 guard_pokemon_id = 6;
+    	optional int32 guard_pokemon_cp = 7;
+
+    	// prestige (or experience) of the gym
+    	optional int64 gym_points = 10;
+
+    	// Whether someone is battling at the gym currently
+    	optional bool is_in_battle = 11;
+
+    	// Timestamp when the pokestop can be activated again to get items / xp
+    	optional int64 cooldown_complete_timestamp_ms = 14;
+
+    	optional int32 sponsor = 15;
+    	optional int32 rendering_type = 16;
+
+    	// Might represent the type of item applied to the pokestop, right now only lures can be applied
+    	optional bytes active_fort_modifier = 12;
+    	optional FortLureInfo lure_info = 13;
+
+      message FortLureInfo {
+      	optional string fort_id = 1;
+      	optional fixed64 encounter_id = 2;
+      	optional int32 active_pokemon_id = 3;
+      	optional int64 lure_expires_timestamp_ms = 4;
+      }
+    }
+
+    message SpawnPoint {
+    	optional double latitude = 2;
+    	optional double longitude = 3;
+    }
+
+    message FortSummary {
+    	optional int32 fort_summary_id = 1;
+    	optional int32 last_modified_timestamp_ms = 2;
+    	optional int32 latitude = 3;
+    	optional int32 longitude = 4;
+    }
+
+    message WildPokemon {
+    	optional fixed64 encounter_id = 1;
+    	optional int64 last_modified_timestamp_ms = 2;
+    	optional double latitude = 3;
+    	optional double longitude = 4;
+    	optional string spawn_point_id = 5;
+    	optional PokemonData pokemon_data = 7;
+    	optional int32 time_till_hidden_ms = 11;
+
+      message PokemonData {
+      	optional fixed64 id = 1;
+      	optional int32 pokemon_id = 2;
+      	optional int32 cp = 3;
+      	optional int32 stamina = 4;
+      	optional int32 stamina_max = 5;
+      	optional int32 move_1 = 6;
+      	optional int32 move_2 = 7;
+      	optional int32 deployed_fort_id = 8;
+      	optional string owner_name = 9;
+      	optional bool is_egg = 10;
+      	optional double egg_km_walked_target = 11;
+      	optional double egg_km_walked_start = 12;
+      	optional int32 origin = 14;
+      	optional float height_m = 15;
+      	optional float weight_kg = 16;
+      	optional int32 individual_attack = 17;
+      	optional int32 individual_defense = 18;
+      	optional int32 individual_stamina = 19;
+      	optional float cp_multiplier = 20;
+      	optional int32 pokeball = 21;
+      	optional uint64 captured_cell_id = 22;
+      	optional int32 battles_attacked = 23;
+      	optional int32 battles_defended = 24;
+      	optional string egg_incubator_id = 25;
+      	optional uint64 creation_time_ms = 26;
+      	optional int32 num_upgrades = 27;
+      	optional float additional_cp_multiplier = 28;
+      	optional int32 favorite = 29;
+      	optional string nickname = 30;
+      	optional int32 from_fort = 31;
+      }
+    }
+
+    message NearbyPokemon {
+    	optional int32 pokemon_id = 1;
+    	optional float distance_in_meters = 2;
+    	optional fixed64 encounter_id = 3;
+    }
+
+    message MapPokemon {
+    	optional string spawn_point_id = 1;
+    	optional fixed64 encounter_id = 2;
+    	optional int32 pokemon_id = 3;
+    	// After this timestamp, the pokemon will be gone.
+    	optional int64 expiration_timestamp_ms = 4;
+    	optional double latitude = 5;
+    	optional double longitude = 6;
+    }
+  }
+}
