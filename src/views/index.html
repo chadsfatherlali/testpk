@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>Pokemons</title>
     
     <style>
@@ -25,9 +25,11 @@
 <body>
 
 <div id="map"></div>
-
+<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=initMap&key=AIzaSyB0BauH3s63m4_2cektNnE80blI8pfWvbg" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js"></script>
+
 <script>
     var     endpoint = 'https://pokeapi.co/api/v2/pokemon-form/',
             dir = '{{ dir }}',
@@ -48,12 +50,12 @@
         if (data) {
             if (data.catchable_pokemon) {
                 console.log('catchable', data.catchable_pokemon);
-                renderMap(data.catchable_pokemon, 'catchable');
+                //renderMap(data.catchable_pokemon, 'catchable');
             }
 
             if (data.wild_pokemon) {
                 console.log('wild', data.wild_pokemon);
-                //renderMap(data.wild_pokemon, 'wild');
+                renderMap(data.wild_pokemon, 'wild');
             }
 
             if (data.nearby_pokemon) {
@@ -65,19 +67,35 @@
             var defs = [];
 
             $.each(obj, function (k, v) {
-                defs.push($.get(endpoint + v.pokemon_id).then(function (result) {
-                    var marker = new google.maps.Marker({
+                var namecache = v.latitude + '_' +  v.longitude + '_' + v.pokemon_data.pokemon_id;
+
+                if ($.jStorage.get(namecache)) {
+                    var result = JSON.parse($.jStorage.get(namecache));
+
+                    new google.maps.Marker({
                         position: {lat: v.latitude, lng: v.longitude},
                         map: map,
                         icon: result.sprites.front_default,
                         title: result.name
                     });
-                }));
+                }
+
+                else {
+                    defs.push($.get(endpoint + v.pokemon_data.pokemon_id).then(function (result) {
+                        $.jStorage.set(namecache, JSON.stringify(result));
+                        $.jStorage.setTTL(namecache, v.time_till_hidden_ms);
+
+                        new google.maps.Marker({
+                            position: {lat: v.latitude, lng: v.longitude},
+                            map: map,
+                            icon: result.sprites.front_default,
+                            title: result.name
+                        });
+                    }));
+                }
 
                 $.when.apply(null, defs)
-                        .done(function (result) {
-                            console.log('Hecho');
-                        });
+                        .done(function (result) {});
             });
         }
     }
