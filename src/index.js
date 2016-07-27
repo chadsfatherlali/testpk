@@ -10,6 +10,8 @@ const api = require('pokemon-go-api'),
     app = express(),
     swig = require('swig');
 
+
+app.set('port', (process.env.PORT || 5000));
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
@@ -51,7 +53,7 @@ app.get('/:provider/:user/:pass/:dir', function (req, res) {
         });
 });
 
-app.listen(1412, function () {
-    console.log('Example app listening on port 1412!');
+app.listen(app.get('port'), function () {
+    console.log('Example app listening on port ' + app.get('port'));
 });
 
