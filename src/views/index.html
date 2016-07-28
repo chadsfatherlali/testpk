@@ -20,105 +20,248 @@
             width: 100%;
             height: 100%;
         }
+        #formContainer {
+           position: fixed;
+           top: 10px;
+           right: 10px;
+           background: white;
+           padding: 1em;
+           width: 30%;
+            
+            -webkit-transition: all 1s;
+            -moz-transition: all 1s;
+            -ms-transition: all 1s;
+            -o-transition: all 1s;
+            transition: all 1s;
+
+            -webkit-transform: translate(0%, 0%);
+            -moz-transform: translate(0%, 0%);
+            -ms-transform: translate(0%, 0%);
+            -o-transform: translate(0%, 0%);
+            transform: translate(0%, 0%);
+        }
+        #formContainer #show-hide-controls {
+            display: block;
+            position: absolute;
+            background: white;
+            top: 0;
+            left: -33px;
+            width: 30px;
+            height: 30px;
+            padding: 0.4em 0.7em;
+            cursor: pointer;
+        }
+        #formContainer.hiden-own {
+            -webkit-transform: translate(100%, 0%);
+            -moz-transform: translate(100%, 0%);
+            -ms-transform: translate(100%, 0%);
+            -o-transform: translate(100%, 0%);
+            transform: translate(100%, 0%);
+        }
+
+        @media (max-width: 480px) {
+            #formContainer {
+                width: 80%;
+            }
+        }
     </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap2/bootstrap-switch.min.css" />
 </head>
 <body>
 
 <div id="map"></div>
-<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script>
+<div id="formContainer">
+    <div id="show-hide-controls">X</div>
+    <form id="logForm">
+        <div class="form-group">
+            <input class="form-control" type="text" name="usuer" id="user" placeholder="Usuario">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="pass" id="pass" placeholder="Contraseña">
+        </div>
+        <div class="form-group">
+            <select class="form-control" name="provider" id="provider">
+                <option value="google">Google</option>
+                <option value="ptc">Pokemon Go Account</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <input type="checkbox" name="switcher" />
+        </div>
+    </form>
+</div>
+
+<scrip src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></scrip>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=initMap&key=AIzaSyB0BauH3s63m4_2cektNnE80blI8pfWvbg" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=initMap&key=AIzaSyB0BauH3s63m4_2cektNnE80blI8pfWvbg" async></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js"></script>
 
 <script>
-    var     endpoint = 'https://pokeapi.co/api/v2/pokemon-form/',
-            dir = '{{ dir }}',
-            pokemons = {{ pokemons | json | safe }};
+    var     map,
+            me,
+            status,
+            api = '/pokedex',
+            pulling = false,
+            markers = [],
+            melocation = {},
+            pokedex = {{ pokedex | json | safe }};
 
     function initMap () {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: -34.397, lng: 150.644},
-            zoom: 18
+        var $element = $("[name='switcher']");
+
+        $element.bootstrapSwitch();
+        $element.on('switchChange.bootstrapSwitch', function(event, state) {
+            status = state;
+
+            if (state) {
+                scanPokemons();
+            }
         });
-        geoCodeAdress(new google.maps.Geocoder(), map);
-        addPokemonsMap(map);
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 1
+        });
     }
 
-    function addPokemonsMap (map) {
-        var data = pokemons[0] || null;
+    function scanPokemons () {
+        var     navigatorGeoLocation = navigator.geolocation,
+                $user = $('#user'),
+                $pass = $('#pass'),
+                $provider = $('#provider');
 
-        if (data) {
-            if (data.catchable_pokemon) {
-                console.log('catchable', data.catchable_pokemon);
-                //renderMap(data.catchable_pokemon, 'catchable');
+        navigatorGeoLocation.getCurrentPosition(function (points) {
+            melocation = points;
+            setMeInMap(points);
+
+            if (
+                    $user.val()
+                    && $pass.val()
+                    && $provider.val()
+                    && status
+            ) {
+                pullPokemons(
+                        $user.val(),
+                        $pass.val(),
+                        $provider.val(),
+                        melocation
+                );
             }
+        });
 
-            if (data.wild_pokemon) {
-                console.log('wild', data.wild_pokemon);
-                renderMap(data.wild_pokemon, 'wild');
+        setInterval(function () {
+            navigatorGeoLocation.getCurrentPosition(function (points) {
+                melocation = points;
+                var latLon = new google.maps.LatLng(points.coords.latitude, points.coords.longitude);
+
+                me.setPosition(latLon);
+                map.panTo(me.getPosition());
+            });
+        }, 5000);
+
+        setInterval(function () {
+            if (
+                    $user.val()
+                    && $pass.val()
+                    && $provider.val()
+                    && status
+            ) {
+                pullPokemons(
+                        $user.val(),
+                        $pass.val(),
+                        $provider.val(),
+                        melocation
+                );
             }
+        }, 120000);
+    }
 
-            if (data.nearby_pokemon) {
-                console.log('nearby', data.nearby_pokemon);
-            }
-        }
+    function setMeInMap (points) {
+        me = new google.maps.Marker({
+            position: {
+                lat: points.coords.latitude,
+                lng: points.coords.longitude
+            },
+            map: map
+        });
 
-        function renderMap (obj, type) {
-            var defs = [];
+        map.setZoom(17);
+        map.panTo(me.getPosition());
+    }
 
-            if ($.jStorage.index().length > 0) {
-                $.each($.jStorage.index(), function (k, v) {
-                    var result = JSON.parse($.jStorage.get(v));
+    function pullPokemons (user, pass, provider, location) {
+        if (!pulling) {
+            pulling = true;
 
-                    new google.maps.Marker({
-                        position: {lat: result.latitude, lng: result.longitude},
-                        map: map,
-                        icon: result.sprites.front_default,
-                        title: result.name
+            $.post(
+                    api,
+                    {
+                        user: user,
+                        pass: pass,
+                        provider: provider,
+                        type: 'coords',
+                        name: 'Pedro de texeira 8 Madrid',
+                        longitude: location.coords.longitude,
+                        latitude: location.coords.latitude,
+                        altitude: 17
+                    }
+            )
+                    .done(function (data) {
+                        addPokemonsMap(data);
+                        pulling = false;
                     });
-                });
-            }
+        }
+    }
 
-            $.each(obj, function (k, v) {
-                var namecache = v.latitude + '_' +  v.longitude + '_' + v.pokemon_data.pokemon_id;
-
-                if (!$.jStorage.get(namecache)) {
-                    defs.push($.get(endpoint + v.pokemon_data.pokemon_id).then(function (result) {
-                        result.latitude = v.latitude;
-                        result.longitude = v.longitude;
-
-                        $.jStorage.set(namecache, JSON.stringify(result));
-                        $.jStorage.setTTL(namecache, v.time_till_hidden_ms);
-
-                        new google.maps.Marker({
-                            position: {lat: v.latitude, lng: v.longitude},
-                            map: map,
-                            icon: result.sprites.front_default,
-                            title: result.name
-                        });
-                    }));
+    function addPokemonsMap (data) {
+        if (data.map) {
+            $.each(data.map, function (k, v) {
+                if (window.pokedebug == 1) {
+                    console.log(v);
                 }
 
-                $.when.apply(null, defs)
-                        .done(function (result) {});
+                if (v.TimeTillHiddenMs) {
+                    var     id = v.pokemon.PokemonId,
+                            namecache = [
+                                v.Latitude,
+                                v.Longitude,
+                                id
+                            ].join('_');
+
+
+                    if (!$.jStorage.get(namecache)) {
+                        $.jStorage.set(namecache, JSON.stringify(v));
+                        $.jStorage.setTTL(namecache, v.TimeTillHiddenMs);
+
+                        new google.maps.Marker({
+                            position: {lat: v.Latitude, lng: v.Longitude},
+                            map: map,
+                            icon: pokedex[id].img,
+                            title: pokedex[id].name
+                        });
+                    }
+                }
             });
         }
     }
 
-    function geoCodeAdress (geocoder, map) {
-        geocoder.geocode({'address': dir}, function(results, status) {
-            if (status === google.maps.GeocoderStatus.OK) {
-                map.setCenter(results[0].geometry.location);
+    var $showhidecontrols = $('#show-hide-controls');
 
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: results[0].geometry.location
-                });
-            } else {
-                alert('Geocode was not successful for the following reason: ' + status);
-            }
-        });
-    }
+    $showhidecontrols.on('click', function () {
+        var $parent = $showhidecontrols.parent();
+
+        if ($parent.hasClass('hiden-own')) {
+            $parent.removeClass('hiden-own');
+        }
+
+        else {
+            $parent.addClass('hiden-own');
+        }
+    });
 </script>
 </body>
 </html>

@@ -17,6 +17,9 @@
     "protobufjs": "^5.0.1",
     "request": "^2.73.0",
     "express": "latest",
-    "swig": "latest"
+    "swig": "latest",
+    "pm2": "latest",
+    "pokemon-go-node-api": "latest",
+    "body-parser": "latest"
   }
 }
