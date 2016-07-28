@@ -76,10 +76,10 @@
     <div id="show-hide-controls">X</div>
     <form id="logForm">
         <div class="form-group">
-            <input class="form-control" type="text" name="usuer" id="user" placeholder="Usuario">
+            <input class="form-control" type="text" name="usuer" id="user" placeholder="User">
         </div>
         <div class="form-group">
-            <input class="form-control" type="password" name="pass" id="pass" placeholder="Contraseña">
+            <input class="form-control" type="password" name="pass" id="pass" placeholder="Password">
         </div>
         <div class="form-group">
             <select class="form-control" name="provider" id="provider">
@@ -89,7 +89,11 @@
         </div>
 
         <div class="form-group">
-            <input type="checkbox" name="switcher" />
+            <input type="checkbox" name="switcher" data-label-text="Radar" />
+        </div>
+
+        <div class="form-group">
+            <input type="checkbox" name="switcher-fixed" data-label-text="Fixed position" />
         </div>
     </form>
 </div>
@@ -105,6 +109,7 @@
     var     map,
             me,
             status,
+            fixed = false,
             api = '/pokedex',
             pulling = false,
             markers = [],
@@ -112,9 +117,16 @@
             pokedex = {{ pokedex | json | safe }};
 
     function initMap () {
-        var $element = $("[name='switcher']");
+        var     $element = $("[name='switcher']"),
+                $fixed = $("[name='switcher-fixed']");
 
+        $fixed.bootstrapSwitch();
         $element.bootstrapSwitch();
+
+        $fixed.on('switchChange.bootstrapSwitch', function(event, state) {
+            fixed = state;
+        });
+
         $element.on('switchChange.bootstrapSwitch', function(event, state) {
             status = state;
 
@@ -159,7 +171,10 @@
                 var latLon = new google.maps.LatLng(points.coords.latitude, points.coords.longitude);
 
                 me.setPosition(latLon);
-                map.panTo(me.getPosition());
+
+                if (!fixed) {
+                    map.panTo(me.getPosition());
+                }
             });
         }, 5000);
 
