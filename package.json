@@ -13,15 +13,15 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.4.1",
-    "geocoder": "^0.2.2",
-    "gpsoauthnode": "0.0.5",
     "lodash": "^4.13.1",
-    "protobufjs": "^5.0.1",
     "request": "^2.73.0",
     "express": "latest",
     "swig": "latest",
     "pm2": "latest",
     "pokemon-go-node-api": "latest",
-    "body-parser": "latest"
+    "body-parser": "latest",
+    "protobufjs": "^5.0.1",
+    "gpsoauthnode": "0.0.5",
+    "geocoder": "^0.2.2"
   }
 }
