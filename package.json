@@ -9,7 +9,6 @@
   "author": "Santiago Sanchez",
   "license": "ISC",
   "dependencies": {
-    "pokemon-go-api": "^0.0.11",
     "bluebird": "^3.4.1",
     "geocoder": "^0.2.2",
     "gpsoauthnode": "0.0.5",

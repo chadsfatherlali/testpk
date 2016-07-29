@@ -6,15 +6,15 @@
 
 const
     PokemonGO = require('pokemon-go-node-api/poke.io.js'),
-    api = require('pokemon-go-api'),
     _ = require('lodash'),
     express = require('express'),
     app = express(),
     swig = require('swig'),
     bodyParser = require('body-parser'),
     fs = require('fs'),
-    pokedex = JSON.parse(fs.readFileSync(__dirname + '/js/pockedex.json', 'utf8'));
+    pokedex = JSON.parse(fs.readFileSync(__dirname + '/statics/js/pockedex.json', 'utf8'));
 
+app.use('/statics', express.static(__dirname + '/statics'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('port', (process.env.PORT || 5000));
@@ -32,38 +32,6 @@ app.get('/', function (req, res) {
         pokemons[pokemon.id] = pokemon;
     });
 
-    /*api.login(req.params.user, req.params.pass, req.params.provider)
-        .then(function() {
-            return api.location.set('address', req.params.dir)
-                .then(api.getPlayerEndpoint);
-        })
-        .then(api.mapData.getNearby)
-        .then(function(data) {
-            var results = _.map(data, function (result) {
-                if (result.catchable_pokemon.length > 0
-                    || result.wild_pokemon.length > 0
-                ) {
-                    return _.pick(result, [
-                        'wild_pokemon',
-                        'catchable_pokemon',
-                        'nearby_pokemon'
-                    ]);
-                }
-            });
-
-            var pokemons = _.filter(results, function (result) {
-                return typeof result !== 'undefined';
-            });
-
-            res.render('index', {
-                pokemons: pokemons,
-                dir: req.params.dir
-            });
-        })
-        .catch(function(error) {
-            console.log('error', error.stack);
-        });*/
-
     res.render('index', {
         pokedex: pokemons
     });
@@ -77,9 +45,9 @@ app.post('/pokedex', function (req, res) {
             type: 'name',
             name: req.body.name
         },
-        'coords': {
+        coords: {
             type: 'coords',
-            'coords': {
+            coords: {
                 longitude: parseFloat(req.body.longitude),
                 latitude: parseFloat(req.body.latitude),
                 altitude: parseFloat(req.body.altitude)
@@ -97,8 +65,8 @@ app.post('/pokedex', function (req, res) {
 
             api.Heartbeat(function (err, data) {
                 var groups = {
-                    'nearby': [],
-                    'map': []
+                    nearby: [],
+                    map: []
                 };
 
                 var pokemonGroup = _.map(data.cells, function (cell) {
