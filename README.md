@@ -7,7 +7,6 @@ A simple rest API made with nodejs and implemente [POKEMON GO NODE API](https://
 
 ![Code](https://github.com/chadsfatherlali/testpk/blob/master/src/statics/imgs/1.png "Code")
 ![Locations](https://github.com/chadsfatherlali/testpk/blob/master/src/statics/imgs/7.png "Locations")
-![Locations](https://github.com/chadsfatherlali/testpk/blob/master/src/statics/imgs/2.png "Locations")
 ![Locations](https://github.com/chadsfatherlali/testpk/blob/master/src/statics/imgs/3.png "Locations")
 ![Locations](https://github.com/chadsfatherlali/testpk/blob/master/src/statics/imgs/4.png "Locations")
 ![Locations](https://github.com/chadsfatherlali/testpk/blob/master/src/statics/imgs/5.png "Locations")
