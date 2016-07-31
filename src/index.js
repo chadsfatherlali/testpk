@@ -105,7 +105,10 @@ app.post('/pokedex', function (req, res) {
                     });
                 });
 
-                res.json(groups);
+                res.json({
+                    spawn: data.cells[0].SpawnPoint,
+                    groups: groups
+                });
             });
         }
     )

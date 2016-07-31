@@ -100,7 +100,7 @@ function scanPokemons () {
                 melocation
             );
         }
-    }, 120000);
+    }, 30000);
 }
 
 function setMeInMap (points) {
@@ -127,17 +127,51 @@ function pullPokemons (user, pass, provider, location) {
                 pass: pass,
                 provider: provider,
                 type: 'coords',
-                name: 'Pedro de texeira 8 Madrid',
+                name: 'Sol Madrid',
                 longitude: location.coords.longitude,
                 latitude: location.coords.latitude,
-                altitude: 10
+                altitude: 20
             }
         )
             .done(function (data) {
-                pullingPokemons(data);
+                if (window.pokedebug) {
+                    console.log('::::::::::::::::::: BRUTE :::::::::::::::::::');
+                    console.log(data);
+                }
+
+                setSpawnpoint(data.spawn);
+                pullingPokemons(data.groups);
                 pulling = false;
             });
     }
+}
+
+function setSpawnpoint(data) {
+    if (window.pokedebug) {
+        console.log('::::::::::::::::::: POINT :::::::::::::::::::');
+        console.log(data);
+    }
+
+    $.each(data, function (k ,v) {
+        var printid = ['print', v.Latitude, v.Longitude].join('_');
+
+        window[printid] = new google.maps.Marker({
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 0.2,
+                fillOpacity: 0.3,
+                fillColor: 'red',
+                path: 'M121.731,21.763c-6.002,3.375-13.75,19.623-17,18.123c-3.25-1.5-5-29.622-7.873-32.267    c-4.874,4.642-5.501,30.642-9.624,32.267c-4.126,1.625-12.125-16.874-15.5-17.25C69.86,30.388,84.859,78.388,95.86,78.388    S122.98,29.014,121.731,21.763z'
+            },
+            position: {
+                lat: v.Latitude,
+                lng: v.Longitude
+            },
+            map: map
+        });
+
+        window[printid].liveOnMap(30000, window[printid]);
+    });
 }
 
 function pullingPokemons (data) {
@@ -156,9 +190,9 @@ function pullingPokemons (data) {
                         id
                     ].join('_');
 
-                if (!$.jStorage.get(namecache)) {
+                /*if (!$.jStorage.get(namecache)) {
                     $.jStorage.set(namecache, JSON.stringify(v));
-                    $.jStorage.setTTL(namecache, v.TimeTillHiddenMs);
+                    $.jStorage.setTTL(namecache, v.TimeTillHiddenMs);*/
 
                     window[namecache] = new google.maps.Marker({
                         position: {
@@ -171,7 +205,7 @@ function pullingPokemons (data) {
                     });
 
                     window[namecache].liveOnMap(v.TimeTillHiddenMs, window[namecache]);
-                }
+                /*}*/
             }
         });
     }

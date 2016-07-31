@@ -18,10 +18,10 @@
     "express": "latest",
     "swig": "latest",
     "pm2": "latest",
-    "pokemon-go-node-api": "latest",
     "body-parser": "latest",
     "protobufjs": "^5.0.1",
     "gpsoauthnode": "0.0.5",
-    "geocoder": "^0.2.2"
+    "geocoder": "^0.2.2",
+    "pokemon-go-node-api": "https://github.com/Armax/Pokemon-GO-node-api.git#e388b8e2fd13d477157e0d8ecabd279871451628"
   }
 }
