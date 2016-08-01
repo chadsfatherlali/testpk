@@ -139,7 +139,7 @@ function pullPokemons (user, pass, provider, location) {
                     console.log(data);
                 }
 
-                setSpawnpoint(data.spawn);
+                setSpawnpoint(data.groups.spawn);
                 pullingPokemons(data.groups);
                 pulling = false;
             });

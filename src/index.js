@@ -12,8 +12,10 @@ const
     swig = require('swig'),
     bodyParser = require('body-parser'),
     fs = require('fs'),
+    timeout = require('connect-timeout'),
     pokedex = JSON.parse(fs.readFileSync(__dirname + '/statics/js/pockedex.json', 'utf8'));
 
+app.use(timeout(300000, {}));
 app.use('/statics', express.static(__dirname + '/statics'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -66,7 +68,8 @@ app.post('/pokedex', function (req, res) {
             api.Heartbeat(function (err, data) {
                 var groups = {
                     nearby: [],
-                    map: []
+                    map: [],
+                    spawn: []
                 };
 
                 var pokemonGroup = _.map(data.cells, function (cell) {
@@ -74,11 +77,13 @@ app.post('/pokedex', function (req, res) {
                         cell.NearbyPokemon.length > 0
                         || cell.WildPokemon.length > 0
                         || cell.MapPokemon.length > 0
+                        || cell.SpawnPoint.length > 0
                     ) {
                         return _.pick(cell, [
                             'NearbyPokemon',
                             'WildPokemon',
-                            'MapPokemon'
+                            'MapPokemon',
+                            'SpawnPoint'
                         ]);
                     }
                 });
@@ -96,6 +101,12 @@ app.post('/pokedex', function (req, res) {
                                 });
                                 break;
 
+                            case 'SpawnPoint':
+                                _.each(v, function (v, k) {
+                                    groups.spawn.push(v);
+                                });
+                                break;
+
                             default :
                                 _.each(v, function (v, k) {
                                     groups.map.push(v);
@@ -106,7 +117,7 @@ app.post('/pokedex', function (req, res) {
                 });
 
                 res.json({
-                    spawn: data.cells[0].SpawnPoint,
+                    brute: data,
                     groups: groups
                 });
             });
@@ -117,4 +128,5 @@ app.post('/pokedex', function (req, res) {
 app.listen(app.get('port'), function () {
     console.log('Example app listening on port ' + app.get('port'));
 });
+
 
