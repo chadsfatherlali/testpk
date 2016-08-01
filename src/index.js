@@ -129,13 +129,7 @@ app.get('/pokedex-data', function (req, res) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
 
-    var pokemons = {};
-
-    _.map(pokedex.pokemon, function (pokemon) {
-        pokemons[pokemon.id] = pokemon;
-    });
-
-    res.json(pokemons);
+    res.json(pokedex.pokemon);
 });
 
 app.listen(app.get('port'), function () {
