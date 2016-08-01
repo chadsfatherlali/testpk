@@ -39,7 +39,7 @@ app.get('/', function (req, res) {
     });
 });
 
-app.post('/pokedex', function (req, res) {
+app.post('/pokedex', timeout(300000), function (req, res) {
     var api = new PokemonGO.Pokeio();
 
     var typelocation = {
