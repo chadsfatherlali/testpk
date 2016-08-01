@@ -15,7 +15,7 @@ const
     timeout = require('connect-timeout'),
     pokedex = JSON.parse(fs.readFileSync(__dirname + '/statics/js/pockedex.json', 'utf8'));
 
-app.use(timeout(300000, {}));
+app.use(timeout(300000));
 app.use('/statics', express.static(__dirname + '/statics'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
