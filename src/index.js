@@ -12,10 +12,10 @@ const
     swig = require('swig'),
     bodyParser = require('body-parser'),
     fs = require('fs'),
-    timeout = require('connect-timeout'),
+    // timeout = require('connect-timeout'),
     pokedex = JSON.parse(fs.readFileSync(__dirname + '/statics/js/pockedex.json', 'utf8'));
 
-app.use(timeout(300000));
+// app.use(timeout(300000));
 app.use('/statics', express.static(__dirname + '/statics'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,7 +39,7 @@ app.get('/', function (req, res) {
     });
 });
 
-app.post('/pokedex', timeout(300000), function (req, res) {
+app.post('/pokedex', function (req, res) {
     var api = new PokemonGO.Pokeio();
 
     var typelocation = {
@@ -132,8 +132,10 @@ app.get('/pokedex-data', function (req, res) {
     res.json(pokedex.pokemon);
 });
 
-app.listen(app.get('port'), function () {
+var server = app.listen(app.get('port'), function () {
     console.log('Example app listening on port ' + app.get('port'));
 });
+
+server.timeout = 300000;
 
 
