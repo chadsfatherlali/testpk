@@ -125,6 +125,16 @@ app.post('/pokedex', function (req, res) {
     )
 });
 
+app.get('/pokedex-data', function (req, res) {
+    var pokemons = {};
+
+    _.map(pokedex.pokemon, function (pokemon) {
+        pokemons[pokemon.id] = pokemon;
+    });
+
+    res.json(pokemons);
+});
+
 app.listen(app.get('port'), function () {
     console.log('Example app listening on port ' + app.get('port'));
 });
