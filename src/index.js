@@ -126,6 +126,9 @@ app.post('/pokedex', function (req, res) {
 });
 
 app.get('/pokedex-data', function (req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+
     var pokemons = {};
 
     _.map(pokedex.pokemon, function (pokemon) {
