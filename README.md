@@ -2,7 +2,7 @@
 
 A simple rest API made with nodejs and implemente [POKEMON GO NODE API](https://github.com/Armax/Pokemon-GO-node-api) by Armax, show the location of the wild, map and nearby pokemons on google map
 
-## Reason to write the API rest
+## Reason to write this
 *JUST FOR FUN!!!*
 
 ![Code](https://github.com/chadsfatherlali/testpk/blob/master/src/statics/imgs/1.png "Code")
