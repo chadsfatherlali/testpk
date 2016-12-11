@@ -1,6 +1,6 @@
-# Pokemon GO rest API demo for locate pokemons on google maps
+# Pokemon GO app demo for locate pokemons on google maps
 
-A simple rest API made with nodejs and implemente [POKEMON GO NODE API](https://github.com/Armax/Pokemon-GO-node-api) by Armax, show the location of the wild, map and nearby pokemons on google map
+A simple app made with nodejs and implemente [POKEMON GO NODE API](https://github.com/Armax/Pokemon-GO-node-api) by Armax, show the location of the wild, map and nearby pokemons on google map
 
 ## Reason to write this
 *JUST FOR FUN!!!*
